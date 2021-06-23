@@ -3,28 +3,36 @@ package com.harsha.ui.mainActivity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import com.google.gson.Gson;
+import com.harsha.common.RxTextView;
 import com.harsha.model.Restaurants;
 import com.harsha.model.menuJsonPojo.MenuPojo;
 import com.harsha.model.RestaurantMenu;
 import com.harsha.model.restaurantJsonPojo.RestaurantConvertionPojo;
 import com.harsha.ui.splashactivity.R;
 import com.harsha.ui.splashactivity.databinding.MainActivityBinding;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.harsha.common.Constants.BUFFERING_TIME;
 
 public class MainActivity extends AppCompatActivity {
 
     private MainActivityBinding binding;
     ArrayList<Restaurants> restaurants=new ArrayList<>();
     private RestaurantAdapter restaurantAdapter;
-    private MenuPojo menuPojo;
-    private RestaurantConvertionPojo restaurantConvertionPojo;
     ArrayList<Restaurants> searchitem=new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,20 +60,20 @@ public class MainActivity extends AppCompatActivity {
      */
     private void addingMenusToRespectiveRestaurant(String restaurantResponse,String menuResponse){
         Gson gson = new Gson();
-        menuPojo = gson.fromJson(menuResponse, MenuPojo.class);
-        restaurantConvertionPojo=gson.fromJson(restaurantResponse,RestaurantConvertionPojo.class);
-        for(int i=0;i<restaurantConvertionPojo.getRestaurants().size();i++){
+        MenuPojo menuPojo = gson.fromJson(menuResponse, MenuPojo.class);
+        RestaurantConvertionPojo restaurantConvertionPojo = gson.fromJson(restaurantResponse, RestaurantConvertionPojo.class);
+        for(int i = 0; i< restaurantConvertionPojo.getRestaurants().size(); i++){
             Restaurants pojo=new Restaurants();
             pojo.setId(Integer.parseInt(restaurantConvertionPojo.getRestaurants().get(i).getId()));
             pojo.setCuisine_type(restaurantConvertionPojo.getRestaurants().get(i).getCuisine_type());
             pojo.setName(restaurantConvertionPojo.getRestaurants().get(i).getName());
             pojo.setType(getString(R.string.restaurant));
             ArrayList<RestaurantMenu> restaurantMenus=new ArrayList<>();
-            for(int j=0;j<menuPojo.getMenus().size();j++) {
+            for(int j = 0; j< menuPojo.getMenus().size(); j++) {
                 if (Integer.parseInt(restaurantConvertionPojo.getRestaurants().get(i).getId()) == Integer.parseInt(menuPojo.getMenus().get(j).getRestaurantId())){
                     restaurantMenus.clear();
-                    for(int k=0;k<menuPojo.getMenus().get(j).getCategories().size();k++) {
-                        for(int l=0;l<menuPojo.getMenus().get(j).getCategories().get(k).getMenuItems().size();l++) {
+                    for(int k = 0; k< menuPojo.getMenus().get(j).getCategories().size(); k++) {
+                        for(int l = 0; l< menuPojo.getMenus().get(j).getCategories().get(k).getMenuItems().size(); l++) {
                             RestaurantMenu restpojo=new RestaurantMenu();
                             restpojo.setId(menuPojo.getMenus().get(j).getCategories().get(k).getMenuItems().get(l).getId());
                             restpojo.setName(menuPojo.getMenus().get(j).getCategories().get(k).getMenuItems().get(l).getName());
@@ -85,53 +93,64 @@ public class MainActivity extends AppCompatActivity {
      * search the order of items/cuisine types/restaurants.
      */
     private void searchlistView(){
-        binding.etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+        RxTextView.textChanges(binding.etSearch)
+                .debounce(BUFFERING_TIME, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new io.reactivex.Observer<CharSequence>() {
+                    @Override
+                    public void onSubscribe(@NotNull Disposable d) {
+                    }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                if(s.length()>0){
-                    searchitem.clear();
-                    for(int i=0;i<restaurants.size();i++){
-                        //condition for check the cuisinetype
-                        if(restaurants.get(i).getCuisine_type().toLowerCase().contains(s.toString().toLowerCase())){
-                            searchitem.add(restaurants.get(i));
-                        }
-                        //condition for check the restaurants name
-                        else if(restaurants.get(i).getName().toLowerCase().contains(s.toString().toLowerCase())){
-                            searchitem.add(restaurants.get(i));
-                        }else {
-                            for(int j=0;j<restaurants.get(i).getRestaurantMenus().size();j++){
-                                //condition for check the menu items name
-                                if(restaurants.get(i).getRestaurantMenus().get(j).getName().toLowerCase().contains(s.toString().toLowerCase())){
+                    @Override
+                    public void onNext(@NotNull CharSequence s) {
+                        if(s.length()>0){
+                            searchitem.clear();
+                            for(int i=0;i<restaurants.size();i++){
+                                //condition for check the cuisinetype
+                                if(restaurants.get(i).getCuisine_type().toLowerCase().contains(s.toString().toLowerCase())){
                                     searchitem.add(restaurants.get(i));
-                                    break;
+                                }
+                                //condition for check the restaurants name
+                                else if(restaurants.get(i).getName().toLowerCase().contains(s.toString().toLowerCase())){
+                                    searchitem.add(restaurants.get(i));
+                                }else {
+                                    for(int j=0;j<restaurants.get(i).getRestaurantMenus().size();j++){
+                                        //condition for check the menu items name
+                                        if(restaurants.get(i).getRestaurantMenus().get(j).getName().toLowerCase().contains(s.toString().toLowerCase())){
+                                            searchitem.add(restaurants.get(i));
+                                            break;
+                                        }
+                                    }
                                 }
                             }
+                            restaurantAdapter.notifyDataSetChanged();
+                        }else{
+                            searchitem.clear();
+                            searchitem.addAll(restaurants);
+                            restaurantAdapter.notifyDataSetChanged();
                         }
+                        binding.ivEmpty.setVisibility(searchitem.size()>0? View.GONE:View.VISIBLE);
+                        binding.tvNotFound.setVisibility(searchitem.size()>0?View.GONE:View.VISIBLE);
                     }
-                    restaurantAdapter.notifyDataSetChanged();
-                }else{
-                    searchitem.clear();
-                    searchitem.addAll(restaurants);
-                    restaurantAdapter.notifyDataSetChanged();
-                }
-                binding.ivEmpty.setVisibility(searchitem.size()>0? View.GONE:View.VISIBLE);
-                binding.tvNotFound.setVisibility(searchitem.size()>0?View.GONE:View.VISIBLE);
-            }
-        });
+
+                    @Override
+                    public void onError(@NotNull Throwable e) {
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                });
     }
 
     /**
      * read the restaurants json file
-     * @return
+     * @return restaurant response
      */
     public String loadRestaurantJSONFromAsset() {
-        String json = null;
+        String json;
         try {
             InputStream is = getApplicationContext().getAssets().open("restaurants.json");
             int size = is.available();
@@ -148,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * read the menu json file
-     * @return
+     * @return menu response
      */
     public String loadMenuJSONFromAsset() {
         String json = null;

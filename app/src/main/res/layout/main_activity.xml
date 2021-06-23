@@ -15,6 +15,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:padding="@dimen/thirteenDp"
             android:inputType="text"
+            android:imeOptions="actionDone"
             android:layout_marginTop="@dimen/tenDp"
             android:layout_marginStart="@dimen/fifteenDp"
             android:layout_marginEnd="@dimen/fifteenDp"
