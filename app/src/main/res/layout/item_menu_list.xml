@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/tenDp"
+        android:text="@string/name"
+        android:fontFamily="@font/circular_air_book"
+        android:textSize="@dimen/fifteenSp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/fiveDp"
+        android:text="@string/id"
+        android:textSize="@dimen/fifteenSp"
+        android:fontFamily="@font/circular_air_book"
+        app:layout_constraintTop_toBottomOf="@+id/tvName"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvPrice"
+        android:layout_width="@dimen/zeroDp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/fiveDp"
+        android:text="@string/price"
+        android:textSize="@dimen/fifteenSp"
+        android:fontFamily="@font/circular_air_book"
+        android:layout_marginRight="@dimen/fifteenDp"
+        app:layout_constraintTop_toBottomOf="@+id/tvId"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginEnd="@dimen/fifteenDp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/fiveDp"
+        android:text="@string/cuisineType"
+        android:textSize="@dimen/fifteenSp"
+        android:fontFamily="@font/circular_air_book"
+        app:layout_constraintTop_toBottomOf="@+id/tvPrice"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/tenDp"/>
+
+    <View
+        android:id="@+id/viewBottomShadow"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/threeDp"
+        android:layout_marginTop="@dimen/fiveDp"
+        app:layout_constraintTop_toBottomOf="@+id/tvCuisine"
+        android:background="@drawable/shadow_top_layout"
+        android:visibility="visible"
+        tools:ignore="UnknownIdInLayout" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

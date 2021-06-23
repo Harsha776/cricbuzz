@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">CricBuzz</string>
+    <string name="name">Name :- </string>
+    <string name="id">ID :- </string>
+    <string name="cuisineType">Cuisine_type :- </string>
+    <string name="menus">Menus :- </string>
+    <string name="restaurant">Restaurant</string>
+    <string name="description">Description:- </string>
+    <string name="price">price:- </string>
+    <string name="dataNotFound">Data not found..!</string>
+</resources>

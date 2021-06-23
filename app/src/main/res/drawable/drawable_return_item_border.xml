@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--the shadow comes from here-->
+
+    <item
+        android:bottom="@dimen/twoDp"
+        android:left="@dimen/zeroDp"
+        android:right="@dimen/zeroDp"
+        android:top="@dimen/twoDp">
+
+        <!--whatever you want in the background, here i preferred solid white -->
+        <shape android:shape="rectangle">
+            <solid android:color="@color/white" />
+            <stroke
+                android:width="@dimen/oneDp"
+                android:color="@color/bgColor" />
+            <corners android:radius="@dimen/threeDp" />
+        </shape>
+    </item>
+
+</layer-list>
